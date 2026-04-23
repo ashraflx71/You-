@@ -3,15 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>YOU | نظام الدفع والرسوم الذكي</title>
-    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap" rel="stylesheet">
+    <title>YOU | النظام المالي المتكامل</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
     <style>
         :root {
-            --bg-purple: #1a1a2e;
+            --bg-purple: #0a0a1a;
             --card-purple: #16213e;
             --accent-gold: #ffd700;
             --text-white: #ffffff;
-            --success-green: #4caf50;
+            --success-green: #00ff88;
             --fee-red: #ff4d4d;
         }
 
@@ -20,128 +21,147 @@
             background-color: var(--bg-purple);
             color: var(--text-white);
             margin: 0;
+            padding: 0;
             display: flex;
             flex-direction: column;
             align-items: center;
             min-height: 100vh;
         }
 
-        /* شاشة الدخول المؤمنة */
+        /* شاشة دخول ضخمة */
         #loginOverlay {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
             background: var(--bg-purple);
             z-index: 9999;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
+            display: flex; align-items: center; justify-content: center;
         }
 
         .login-box {
             background: var(--card-purple);
-            padding: 30px;
-            border-radius: 20px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            padding: 50px 30px;
+            border-radius: 30px;
             text-align: center;
-            border: 1px solid var(--accent-gold);
-            width: 80%;
-            max-width: 300px;
+            border: 2px solid var(--accent-gold);
+            width: 90%;
+            max-width: 450px;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.8);
         }
+
+        .login-box h2 { font-size: 2.5rem; margin-bottom: 20px; font-weight: 900; }
 
         input[type="password"] {
-            padding: 12px;
-            border-radius: 10px;
-            border: none;
-            width: 90%;
-            text-align: center;
-            font-size: 1.5rem;
-            margin-bottom: 20px;
-            background: #eee;
+            padding: 15px; border-radius: 15px; border: none;
+            width: 100%; text-align: center; font-size: 2rem;
+            margin-bottom: 30px; background: #fff; color: #000;
+            box-sizing: border-box;
         }
 
-        /* الواجهة الرئيسية */
+        /* حاوية التطبيق الرئيسية - تم تكبيرها */
         .container {
-            width: 90%;
-            max-width: 400px;
-            margin-top: 40px;
-            padding-bottom: 50px;
+            width: 95%;
+            max-width: 600px; /* زيادة العرض ليملأ الشاشة */
+            margin-top: 50px;
+            padding-bottom: 100px;
         }
 
         .balance-card {
-            background: linear-gradient(135deg, var(--card-purple), #0f3460);
-            padding: 25px;
-            border-radius: 20px;
+            background: linear-gradient(145deg, #16213e, #1a1a2e);
+            padding: 40px 20px;
+            border-radius: 35px;
             text-align: center;
-            border-bottom: 4px solid var(--accent-gold);
-            margin-bottom: 30px;
-            box-shadow: 0 10px 20px rgba(0,0,0,0.3);
+            border-bottom: 6px solid var(--accent-gold);
+            margin-bottom: 40px;
+            position: relative;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.4);
         }
 
+        .qr-btn {
+            position: absolute; top: 25px; left: 25px;
+            background: var(--accent-gold); border: none;
+            border-radius: 15px; width: 60px; height: 60px;
+            cursor: pointer; display: flex; align-items: center; justify-content: center;
+            font-weight: 900; font-size: 1.2rem; color: var(--bg-purple);
+            box-shadow: 0 5px 15px rgba(255,215,0,0.3);
+        }
+
+        .balance-card p { font-size: 1.2rem; opacity: 0.8; margin: 0; }
+        .balance-card h1 { font-size: 3.5rem; color: var(--accent-gold); margin: 15px 0; font-weight: 900; }
+
+        /* الأزرار الكبيرة */
         .actions-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 15px;
+            gap: 20px;
         }
 
         .btn-action {
             background: var(--card-purple);
-            border: 1px solid rgba(255,215,0,0.2);
+            border: 1px solid rgba(255,215,0,0.3);
             color: white;
-            padding: 20px;
-            border-radius: 15px;
-            font-weight: bold;
+            padding: 30px 10px;
+            border-radius: 25px;
+            font-weight: 700;
             cursor: pointer;
             transition: 0.3s;
-            font-size: 0.9rem;
+            font-size: 1.3rem; /* تكبير خط الأزرار */
         }
 
-        .btn-action:active {
-            transform: scale(0.9);
-            background: var(--accent-gold);
-            color: var(--bg-purple);
-        }
+        .btn-action:hover { border-color: var(--accent-gold); background: #1f2d50; }
+        .btn-action:active { transform: scale(0.92); background: var(--accent-gold); color: #000; }
 
-        #history-section {
-            margin-top: 30px;
-            width: 100%;
-            display: none;
-        }
+        /* سجل العمليات */
+        #history-section { margin-top: 50px; width: 100%; display: none; }
+        #history-section h3 { font-size: 1.8rem; border-right: 6px solid var(--accent-gold); padding-right: 15px; margin-bottom: 25px; }
 
         .transaction-item {
-            background: rgba(255,255,255,0.05);
-            margin-bottom: 12px;
-            padding: 15px;
-            border-radius: 15px;
+            background: rgba(255,255,255,0.03);
+            margin-bottom: 20px;
+            padding: 25px;
+            border-radius: 25px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            border-right: 4px solid var(--accent-gold);
+            border-left: 1px solid rgba(255,215,0,0.1);
         }
 
-        .fee-text {
-            font-size: 0.75rem;
-            color: var(--fee-red);
-            display: block;
+        .transaction-item strong { font-size: 1.4rem; }
+        .transaction-item small { font-size: 1rem; opacity: 0.5; }
+        .amt-text { font-size: 1.6rem; font-weight: 900; color: var(--success-green); }
+        .fee-tag { font-size: 0.9rem; color: var(--fee-red); display: block; text-align: left; }
+
+        /* نافذة الـ QR */
+        #qrModal {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.95); z-index: 10000;
+            display: none; align-items: center; justify-content: center;
         }
+        .qr-content { background: white; padding: 40px; border-radius: 40px; text-align: center; }
+        #qrcode img { margin: 0 auto; }
     </style>
 </head>
 <body>
 
 <div id="loginOverlay">
     <div class="login-box">
-        <h2 style="color:var(--accent-gold); margin-top:0;">YOU SAFE</h2>
-        <p style="font-size:0.9rem;">أدخل رمز الدخول الخاص بأشرف</p>
+        <h2 style="color:var(--accent-gold)">YOU SAFE</h2>
         <input type="password" id="pinInput" placeholder="••••">
-        <br>
-        <button onclick="checkPin()" style="background:var(--accent-gold); border:none; padding:12px 40px; border-radius:10px; font-weight:bold; cursor:pointer; width:100%;">دخول</button>
+        <button onclick="checkPin()" style="background:var(--accent-gold); border:none; padding:20px; border-radius:15px; font-weight:900; width:100%; font-size:1.5rem; cursor:pointer;">دخول النظام</button>
+    </div>
+</div>
+
+<div id="qrModal" onclick="this.style.display='none'">
+    <div class="qr-content" onclick="event.stopPropagation()">
+        <div id="qrcode"></div>
+        <p style="color: #000; margin-top: 20px; font-size: 1.2rem; font-weight: bold;">امسح الكود السريع</p>
     </div>
 </div>
 
 <div class="container">
     <div class="balance-card">
-        <p style="opacity: 0.8; margin: 0; font-size: 0.9rem;">الرصيد الكلي (شامل الرسوم)</p>
-        <h1 id="balanceDisplay" style="font-size: 2.2rem; color: var(--accent-gold); margin: 10px 0;">0.00 EGP</h1>
+        <button class="qr-btn" onclick="showQR()">QR</button>
+        <p>الرصيد الإجمالي الفعلي</p>
+        <h1 id="balanceDisplay">0.00 EGP</h1>
     </div>
 
     <div class="actions-grid">
@@ -152,7 +172,7 @@
     </div>
 
     <div id="history-section">
-        <h3 style="border-right: 4px solid var(--accent-gold); padding-right: 10px; font-size: 1.1rem;">سجل العمليات الذكي</h3>
+        <h3>سجل العمليات</h3>
         <div id="transactions-list"></div>
     </div>
 </div>
@@ -161,88 +181,59 @@
 <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
 
 <script>
-    const firebaseConfig = {
-        databaseURL: "https://ashraflx71-9efae-default-rtdb.firebaseio.com/"
-    };
+    const firebaseConfig = { databaseURL: "https://ashraflx71-9efae-default-rtdb.firebaseio.com/" };
     firebase.initializeApp(firebaseConfig);
     const database = firebase.database();
 
-    const SECRET_PIN = "2026"; 
-
     function checkPin() {
-        const input = document.getElementById('pinInput').value;
-        if (input === SECRET_PIN) {
+        if (document.getElementById('pinInput').value === "2026") {
             document.getElementById('loginOverlay').style.display = 'none';
             sessionStorage.setItem('isLoggedIn', 'true');
             initApp();
-        } else {
-            alert("الرمز السري غير صحيح!");
-            document.getElementById('pinInput').value = "";
-        }
+        } else { alert("خطأ!"); }
+    }
+
+    function showQR() {
+        const qrContainer = document.getElementById('qrcode');
+        qrContainer.innerHTML = '';
+        new QRCode(qrContainer, { text: window.location.href, width: 250, height: 250 });
+        document.getElementById('qrModal').style.display = 'flex';
     }
 
     function initApp() {
-        database.ref('transactions').keepSynced(true);
         database.ref('transactions').on('value', (snapshot) => {
             const list = document.getElementById('transactions-list');
             const balanceText = document.getElementById('balanceDisplay');
-            list.innerHTML = '';
-            let totalWithFees = 0;
+            list.innerHTML = ''; let total = 0;
             const data = snapshot.val();
-
             if (data) {
                 document.getElementById('history-section').style.display = 'block';
                 Object.values(data).reverse().forEach(tx => {
-                    const amount = parseFloat(tx.amount) || 0;
-                    const fees = parseFloat(tx.fees) || 0;
-                    totalWithFees += (amount + fees);
-
+                    const amt = parseFloat(tx.amount) || 0;
+                    const fee = parseFloat(tx.fees) || 0;
+                    total += (amt + fee);
                     const div = document.createElement('div');
                     div.className = 'transaction-item';
                     div.innerHTML = `
-                        <div>
-                            <strong>${tx.type}</strong>
-                            <br><small style="opacity:0.6">${tx.time}</small>
-                        </div>
+                        <div><strong>${tx.type}</strong><br><small>${tx.time}</small></div>
                         <div style="text-align:left">
-                            <div style="color:var(--success-green); font-weight:bold">+${amount.toLocaleString()}</div>
-                            <span class="fee-text">رسوم: ${fees.toLocaleString()}</span>
-                        </div>
-                    `;
+                            <div class="amt-text">+${amt.toLocaleString()}</div>
+                            <span class="fee-tag">رسوم: ${fee.toLocaleString()}</span>
+                        </div>`;
                     list.appendChild(div);
                 });
             }
-            balanceText.innerText = totalWithFees.toLocaleString(undefined, {minimumFractionDigits:2}) + " EGP";
+            balanceText.innerText = total.toLocaleString() + " EGP";
         });
     }
 
     function handleAction(type) {
-        const amountStr = prompt(`إدخال مبلغ لـ ${type}:`);
-        const amount = parseFloat(amountStr);
-
-        if (amountStr && !isNaN(amount) && amount > 0) {
-            let fees = 0;
-            // حساب الرسوم حسب نظام السوق المصري 2026
-            if (type.includes("كاش")) {
-                fees = Math.max(3, amount * 0.01); // 1% بحد أدنى 3 جنيه
-            } else if (type === "فوري") {
-                if (amount <= 50) fees = 2;
-                else if (amount <= 100) fees = 3;
-                else fees = (amount * 0.01) + 2;
-            }
-
-            const total = amount + fees;
-            const confirmAction = confirm(`تفاصيل العملية:\nالمبلغ: ${amount} EGP\nالرسوم: ${fees} EGP\nالإجمالي: ${total} EGP\n\nتأكيد الحفظ؟`);
-
-            if (confirmAction) {
-                const newTx = {
-                    type: type,
-                    amount: amount,
-                    fees: fees,
-                    time: new Date().toLocaleTimeString('ar-EG', {hour:'2-digit', minute:'2-digit'})
-                };
-                database.ref('transactions').push(newTx);
-                if (navigator.vibrate) navigator.vibrate([50, 30, 50]);
+        const val = prompt(`إدخال مبلغ لـ ${type}:`);
+        const n = parseFloat(val);
+        if (val && !isNaN(n) && n > 0) {
+            let f = type.includes("كاش") ? Math.max(3, n * 0.01) : (n <= 100 ? 3 : n * 0.01 + 2);
+            if (confirm(`تأكيد العملية؟\nالمبلغ: ${n}\nالرسوم: ${f}`)) {
+                database.ref('transactions').push({ type, amount: n, fees: f, time: new Date().toLocaleTimeString('ar-EG') });
             }
         }
     }
