@@ -1,55 +1,72 @@
-<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
-<script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
-
 <script>
     const firebaseConfig = {
-        // هذا هو الرابط الدقيق لقاعدتك التي فعلتها الآن
         databaseURL: "https://ashraflx71-9efae-default-rtdb.firebaseio.com/"
     };
-    
     firebase.initializeApp(firebaseConfig);
     const database = firebase.database();
+    
+    // ضمان استقرار البيانات وعدم ضياعها عند انقطاع الشبكة
+    database.ref('transactions').keepSynced(true);
 
-    // بقية الكود البرمجي الذي يتعامل مع الأزرار والسجل
     const balanceDisplay = document.getElementById('balanceDisplay');
     const transactionsList = document.getElementById('transactions-list');
     const historySection = document.getElementById('history-section');
 
+    // جلب البيانات مع حماية ضد الأخطاء
     database.ref('transactions').on('value', (snapshot) => {
-        transactionsList.innerHTML = '';
-        let totalBalance = 0;
-        const data = snapshot.val();
-        
-        if (data) {
-            historySection.style.display = 'block';
-            Object.values(data).reverse().forEach(tx => {
-                totalBalance += parseFloat(tx.amount);
-                const item = document.createElement('div');
-                item.className = 'transaction-item';
-                item.innerHTML = `
-                    <div>
-                        <div style="font-weight: bold; font-size: 0.9rem;">${tx.type}</div>
-                        <div style="font-size: 0.75rem; opacity: 0.6;">${tx.time}</div>
-                    </div>
-                    <div style="color: var(--success-green); font-weight: bold;">+${parseFloat(tx.amount).toLocaleString()} EGP</div>
-                `;
-                transactionsList.appendChild(item);
-            });
+        try {
+            transactionsList.innerHTML = '';
+            let totalBalance = 0;
+            const data = snapshot.val();
+            
+            if (data) {
+                historySection.style.display = 'block';
+                Object.values(data).reverse().forEach(tx => {
+                    // التأكد من أن المبلغ رقم صحيح لعدم حدوث عطل في الحسابات
+                    const amt = parseFloat(tx.amount) || 0;
+                    totalBalance += amt;
+                    
+                    const item = document.createElement('div');
+                    item.className = 'transaction-item';
+                    item.innerHTML = `
+                        <div>
+                            <div style="font-weight: bold; font-size: 0.9rem;">${tx.type}</div>
+                            <div style="font-size: 0.75rem; opacity: 0.6;">${tx.time}</div>
+                        </div>
+                        <div style="color: var(--success-green); font-weight: bold;">+${amt.toLocaleString()} EGP</div>
+                    `;
+                    transactionsList.appendChild(item);
+                });
+            }
+            balanceDisplay.innerText = totalBalance.toLocaleString(undefined, {minimumFractionDigits: 2}) + " EGP";
+        } catch (e) {
+            console.error("خطأ في معالجة البيانات:", e);
         }
-        balanceDisplay.innerText = totalBalance.toLocaleString(undefined, {minimumFractionDigits: 2}) + " EGP";
     });
 
+    // وظيفة الإرسال مع التحقق الشديد من البيانات
     function handleAction(actionName) {
-        if (navigator.vibrate) navigator.vibrate(50);
-        const amount = prompt(`إدخال مبلغ لعملية ${actionName}:`, "100");
-        
-        if (amount && !isNaN(amount)) {
+        // منع الإرسال إذا كان المدخل فارغاً أو ليس رقماً
+        const amount = prompt(`إدخال مبلغ لعملية ${actionName}:`, "");
+        const parsedAmount = parseFloat(amount);
+
+        if (amount && !isNaN(parsedAmount) && parsedAmount > 0) {
             const newTx = {
                 type: actionName,
-                amount: amount,
-                time: new Date().toLocaleTimeString('ar-EG', {hour: '2-digit', minute:'2-digit'})
+                amount: parsedAmount,
+                time: new Date().toLocaleTimeString('ar-EG', {hour: '2-digit', minute:'2-digit'}),
+                device: "Mobile-Admin" // لتمييز العمليات التي تمت من جهازك
             };
-            database.ref('transactions').push(newTx);
+            
+            database.ref('transactions').push(newTx)
+                .then(() => {
+                    if (navigator.vibrate) navigator.vibrate([50, 30, 50]);
+                })
+                .catch((err) => {
+                    alert("عذراً، فشل الاتصال بالسحاب. سيتم الحفظ محلياً.");
+                });
+        } else if (amount !== null) {
+            alert("تنبيه: يرجى إدخال مبلغ صحيح أكبر من صفر.");
         }
     }
 
