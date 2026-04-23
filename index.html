@@ -4,17 +4,18 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>You | دفع ذكي</title>
-    <!-- Google Fonts for better Arabic typography -->
-    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;800&display=swap" rel="stylesheet">
     <style>
         :root {
             --bg-black: #050505;
-            --primary-purple: #8a2be2;
-            --accent-purple: #bc8cf2;
+            --primary-purple: #4b0082; /* موف ملكي غامق */
+            --secondary-purple: #2e004f; /* موف أعمق للتدريج */
             --text-white: #ffffff;
             --card-gray: #121212;
-            --transition: all 0.3s ease;
+            --success-green: #00ff88;
         }
+
+        * { box-sizing: border-box; }
 
         body {
             background-color: var(--bg-black);
@@ -29,51 +30,40 @@
         }
 
         .logo {
-            font-size: 2.5rem;
+            font-size: 2.8rem;
             font-weight: 800;
-            color: var(--primary-purple);
-            text-shadow: 0 0 20px rgba(138, 43, 226, 0.3);
+            color: var(--text-white); /* شعار أبيض ناصع */
+            text-shadow: 0 0 15px var(--primary-purple);
             margin: 40px 0;
-            letter-spacing: 2px;
+            letter-spacing: 3px;
         }
 
-        /* Enhanced Wallet Card with Glassmorphism */
+        /* كارت المحفظة بالموف الغامق */
         .wallet-card {
-            background: linear-gradient(135deg, var(--primary-purple), #4b0082);
+            background: linear-gradient(135deg, var(--primary-purple), var(--secondary-purple));
             width: 100%;
             max-width: 380px;
             border-radius: 24px;
             padding: 30px;
-            box-shadow: 0 15px 35px rgba(138, 43, 226, 0.2);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6);
             margin-bottom: 30px;
-            position: relative;
-            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.1);
         }
 
-        .wallet-card::before {
-            content: '';
-            position: absolute;
-            top: -50%;
-            left: -50%;
-            width: 200%;
-            height: 200%;
-            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
-        }
-
-        .balance-label { 
-            font-size: 0.9rem; 
-            opacity: 0.9; 
+        .balance-label {
+            font-size: 0.95rem;
+            opacity: 0.85;
             font-weight: 400;
+            color: var(--text-white);
         }
 
-        .balance-amount { 
-            font-size: 2.2rem; 
-            font-weight: 700; 
-            margin-top: 8px;
-            letter-spacing: 1px;
+        .balance-amount {
+            font-size: 2.4rem;
+            font-weight: 700;
+            margin-top: 10px;
+            color: var(--text-white);
         }
 
-        /* Improved Button Grid */
         .actions-grid {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
@@ -84,51 +74,46 @@
 
         .btn-action {
             background-color: var(--card-gray);
-            border: 1px solid rgba(138, 43, 226, 0.3);
-            color: white;
-            padding: 25px 15px;
+            border: 1px solid var(--primary-purple);
+            color: var(--text-white);
+            padding: 25px 10px;
             border-radius: 20px;
             text-align: center;
-            cursor: pointer;
-            transition: var(--transition);
-            font-weight: 600;
+            font-weight: 700;
+            font-family: 'Cairo', sans-serif;
             font-size: 1rem;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 10px;
-            outline: none;
-        }
-
-        .btn-action:hover {
-            border-color: var(--primary-purple);
-            background-color: rgba(138, 43, 226, 0.05);
-            transform: translateY(-2px);
+            cursor: pointer;
+            transition: all 0.2s ease;
         }
 
         .btn-action:active {
+            transform: scale(0.95);
             background-color: var(--primary-purple);
-            transform: scale(0.96);
         }
 
         .status {
             margin-top: auto;
             font-size: 0.85rem;
-            color: #00ff88;
+            color: var(--success-green);
             padding: 30px;
             display: flex;
             align-items: center;
-            gap: 8px;
-            opacity: 0.8;
+            gap: 10px;
         }
 
-        .status::before {
-            content: '';
-            width: 8px;
-            height: 8px;
-            background-color: #00ff88;
+        .status-dot {
+            height: 10px;
+            width: 10px;
+            background-color: var(--success-green);
             border-radius: 50%;
-            box-shadow: 0 0 10px #00ff88;
+            box-shadow: 0 0 10px var(--success-green);
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.2); opacity: 0.5; }
+            100% { transform: scale(1); opacity: 1; }
         }
     </style>
 </head>
@@ -147,40 +132,33 @@
         <button class="btn-action">تحويل أموال</button>
     </nav>
 
-    <footer     <footer class="status">النظام يعمل بكفاءة طاقة قصوى</footer>
+    <footer class="status">
+        <span class="status-dot"></span>
+        النظام يعمل بكفاءة طاقة قصوى
+    </footer>
 
     <script>
-        // اختيار العناصر
         const buttons = document.querySelectorAll('.btn-action');
         const balanceElement = document.querySelector('.balance-amount');
 
-        // دالة محاكاة عملية دفع
         function handleAction(actionName) {
-            if (navigator.vibrate) {
-                navigator.vibrate(50); 
-            }
-
+            if (navigator.vibrate) navigator.vibrate(50);
+            
             const amount = prompt(`إدخال مبلغ لعملية: ${actionName}`, "100");
 
             if (amount && !isNaN(amount)) {
-                const originalText = balanceElement.innerText;
                 balanceElement.innerText = "جاري المعالجة...";
-                
                 setTimeout(() => {
-                    alert(`تمت عملية ${actionName} بمبلغ ${amount} جنيه بنجاح!`);
-                    balanceElement.innerText = amount + " EGP";
-                    balanceElement.style.color = "#00ff88"; // لون النجاح الأخضر
-                }, 1500);
+                    alert(`تمت عملية ${actionName} بنجاح!`);
+                    balanceElement.innerText = parseFloat(amount).toLocaleString('en-US', {minimumFractionDigits: 2}) + " EGP";
+                    balanceElement.style.color = "var(--success-green)";
+                }, 1200);
             }
         }
 
         buttons.forEach(button => {
-            button.addEventListener('click', () => {
-                handleAction(button.innerText);
-            });
+            button.addEventListener('click', () => handleAction(button.innerText));
         });
-
-        console.log("YOU App: System Optimized & Ready.");
     </script>
 </body>
 </html>
