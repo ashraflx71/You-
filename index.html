@@ -8,16 +8,13 @@
     <style>
         :root {
             --bg-black: #050505;
-            --primary-purple: #4b0082; /* موف ملكي غامق */
-            --secondary-purple: #2e004f; /* موف أعمق للتدريج */
-            --accent-purple: #bc8cf2;
+            --primary-purple: #4b0082;
+            --secondary-purple: #2e004f;
             --text-white: #ffffff;
             --card-gray: #121212;
             --success-green: #00ff88;
         }
-
         * { box-sizing: border-box; }
-
         body {
             background-color: var(--bg-black);
             color: var(--text-white);
@@ -29,7 +26,6 @@
             align-items: center;
             min-height: 100vh;
         }
-
         .logo {
             font-size: 2.8rem;
             font-weight: 800;
@@ -38,8 +34,6 @@
             margin: 40px 0;
             letter-spacing: 3px;
         }
-
-        /* كارت المحفظة */
         .wallet-card {
             background: linear-gradient(135deg, var(--primary-purple), var(--secondary-purple));
             width: 100%;
@@ -49,105 +43,27 @@
             box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6);
             margin-bottom: 30px;
             border: 1px solid rgba(255, 255, 255, 0.1);
-            position: relative;
-            overflow: hidden;
         }
-
-        .balance-label {
-            font-size: 0.95rem;
-            opacity: 0.85;
-        }
-
-        .balance-amount {
-            font-size: 2.4rem;
-            font-weight: 700;
-            margin-top: 10px;
-        }
-
-        /* شبكة الأزرار */
+        .balance-label { font-size: 0.95rem; opacity: 0.85; }
+        .balance-amount { font-size: 2.4rem; font-weight: 700; margin-top: 10px; }
         .actions-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 16px;
-            width: 100%;
-            max-width: 380px;
+            display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; width: 100%; max-width: 380px;
         }
-
         .btn-action {
-            background-color: var(--card-gray);
-            border: 1px solid var(--primary-purple);
-            color: var(--text-white);
-            padding: 25px 10px;
-            border-radius: 20px;
-            text-align: center;
-            font-weight: 700;
-            font-size: 1rem;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            font-family: 'Cairo', sans-serif;
+            background-color: var(--card-gray); border: 1px solid var(--primary-purple); color: var(--text-white);
+            padding: 25px 10px; border-radius: 20px; text-align: center; font-weight: 700; cursor: pointer;
         }
-
-        .btn-action:active {
-            transform: scale(0.95);
-            background-color: var(--primary-purple);
-        }
-
-        /* سجل العمليات */
-        #history-section {
-            width: 100%;
-            max-width: 380px;
-            margin-top: 30px;
-            display: none; /* يظهر عند أول عملية */
-        }
-
-        .history-title {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 15px;
-        }
-
+        .btn-action:active { transform: scale(0.95); background-color: var(--primary-purple); }
+        #history-section { width: 100%; max-width: 380px; margin-top: 30px; display: none; }
         .transaction-item {
-            background: var(--card-gray);
-            padding: 15px;
-            border-radius: 15px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border-right: 4px solid var(--primary-purple);
-            margin-bottom: 10px;
-            animation: slideIn 0.4s ease forwards;
+            background: var(--card-gray); padding: 15px; border-radius: 15px; display: flex;
+            justify-content: space-between; align-items: center; border-right: 4px solid var(--primary-purple);
+            margin-bottom: 10px; animation: slideIn 0.4s ease forwards;
         }
-
-        @keyframes slideIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        .status {
-            margin-top: auto;
-            font-size: 0.85rem;
-            color: var(--success-green);
-            padding: 30px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .status-dot {
-            height: 10px;
-            width: 10px;
-            background-color: var(--success-green);
-            border-radius: 50%;
-            box-shadow: 0 0 10px var(--success-green);
-            animation: pulse 2s infinite;
-        }
-
-        @keyframes pulse {
-            0% { transform: scale(1); opacity: 1; }
-            50% { transform: scale(1.2); opacity: 0.5; }
-            100% { transform: scale(1); opacity: 1; }
-        }
+        @keyframes slideIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .status { margin-top: auto; font-size: 0.85rem; color: var(--success-green); padding: 30px; display: flex; align-items: center; gap: 10px; }
+        .status-dot { height: 10px; width: 10px; background-color: var(--success-green); border-radius: 50%; animation: pulse 2s infinite; }
+        @keyframes pulse { 0%, 100% { transform: scale(1); opacity: 1; } 50% { transform: scale(1.2); opacity: 0.5; } }
     </style>
 </head>
 <body>
@@ -167,64 +83,72 @@
     </nav>
 
     <section id="history-section">
-        <div class="history-title">
-            <h3 style="font-size: 1.1rem; margin: 0;">آخر العمليات</h3>
-            <span style="font-size: 0.8rem; opacity: 0.6;">عرض الكل</span>
-        </div>
+        <h3 style="font-size: 1.1rem; margin-bottom: 15px;">آخر العمليات</h3>
         <div id="transactions-list"></div>
     </section>
 
     <footer class="status">
         <span class="status-dot"></span>
-        النظام يعمل بكفاءة طاقة قصوى
+        النظام متصل بالسحابة (Firebase)
     </footer>
 
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+
     <script>
-        const buttons = document.querySelectorAll('.btn-action');
+        // إعدادات الربط الخاصة بمشروعك
+        const firebaseConfig = {
+            databaseURL: "https://ashraflx71-9efae-default-rtdb.firebaseio.com/"
+        };
+        firebase.initializeApp(firebaseConfig);
+        const database = firebase.database();
+
         const balanceDisplay = document.getElementById('balanceDisplay');
-        const historySection = document.getElementById('history-section');
         const transactionsList = document.getElementById('transactions-list');
+        const historySection = document.getElementById('history-section');
 
-        function addTransaction(type, amount) {
-            historySection.style.display = 'block';
-            const now = new Date();
-            const time = now.getHours() + ":" + now.getMinutes().toString().padStart(2, '0');
+        // جلب البيانات وتحديث الواجهة تلقائياً
+        database.ref('transactions').on('value', (snapshot) => {
+            transactionsList.innerHTML = '';
+            let totalBalance = 0;
+            const data = snapshot.val();
             
-            const item = document.createElement('div');
-            item.className = 'transaction-item';
-            
-            item.innerHTML = `
-                <div>
-                    <div style="font-weight: bold; font-size: 0.9rem;">${type}</div>
-                    <div style="font-size: 0.75rem; opacity: 0.6;">اليوم | ${time}</div>
-                </div>
-                <div style="color: var(--success-green); font-weight: bold;">+${amount} EGP</div>
-            `;
-            
-            transactionsList.prepend(item);
-        }
+            if (data) {
+                historySection.style.display = 'block';
+                Object.values(data).reverse().forEach(tx => {
+                    totalBalance += parseFloat(tx.amount);
+                    const item = document.createElement('div');
+                    item.className = 'transaction-item';
+                    item.innerHTML = `
+                        <div>
+                            <div style="font-weight: bold; font-size: 0.9rem;">${tx.type}</div>
+                            <div style="font-size: 0.75rem; opacity: 0.6;">${tx.time}</div>
+                        </div>
+                        <div style="color: var(--success-green); font-weight: bold;">+${parseFloat(tx.amount).toLocaleString()} EGP</div>
+                    `;
+                    transactionsList.appendChild(item);
+                });
+            }
+            balanceDisplay.innerText = totalBalance.toLocaleString(undefined, {minimumFractionDigits: 2}) + " EGP";
+        });
 
+        // إضافة عملية جديدة
         function handleAction(actionName) {
             if (navigator.vibrate) navigator.vibrate(50);
+            const amount = prompt(`إدخال مبلغ لعملية ${actionName}:`, "100");
             
-            const amount = prompt(`إدخال مبلغ لعملية: ${actionName}`, "100");
-
             if (amount && !isNaN(amount)) {
-                const originalBalance = balanceDisplay.innerText;
-                balanceDisplay.innerText = "جاري المعالجة...";
-                
-                setTimeout(() => {
-                    alert(`تمت عملية ${actionName} بنجاح!`);
-                    const formattedAmount = parseFloat(amount).toLocaleString('en-US', {minimumFractionDigits: 2});
-                    balanceDisplay.innerText = formattedAmount + " EGP";
-                    balanceDisplay.style.color = "var(--success-green)";
-                    addTransaction(actionName, formattedAmount);
-                }, 1000);
+                const newTx = {
+                    type: actionName,
+                    amount: amount,
+                    time: new Date().toLocaleTimeString('ar-EG', {hour: '2-digit', minute:'2-digit'})
+                };
+                database.ref('transactions').push(newTx);
             }
         }
 
-        buttons.forEach(button => {
-            button.addEventListener('click', () => handleAction(button.innerText));
+        document.querySelectorAll('.btn-action').forEach(btn => {
+            btn.addEventListener('click', () => handleAction(btn.innerText));
         });
     </script>
 </body>
