@@ -1,21 +1,16 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-    <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <meta name="google-site-verification" content="ebf2679a2075cf31" />
+    
     <title>YOU | النظام المالي المتكامل</title>
- <meta name="google-site-verification" content="ebf2679a2075cf31" />
-
-        <meta name="google-site-verification" content="كود_جوجل_الخاص_بك" />
-    ...
-</head>
-
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>YOU | نظام إدارة الأموال المتكامل</title>
+    
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    
     <style>
         :root {
             --bg-purple: #0a0a1a;
@@ -35,6 +30,7 @@
             display: flex; flex-direction: column; align-items: center; min-height: 100vh;
         }
 
+        /* شاشة الدخول */
         #loginOverlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: var(--bg-purple); z-index: 9999;
@@ -49,9 +45,10 @@
 
         input[type="password"] {
             padding: 15px; border-radius: 15px; border: none; width: 100%;
-            text-align: center; font-size: 2rem; margin-bottom: 30px; background: #fff; box-sizing: border-box;
+            text-align: center; font-size: 2rem; margin-bottom: 30px; background: #fff; color: #000;
         }
 
+        /* الحاوية الرئيسية (ملاء الصفحة) */
         .container { width: 95%; max-width: 600px; margin-top: 50px; padding-bottom: 100px; }
 
         .balance-card {
@@ -82,7 +79,9 @@
 
         .btn-action:active { transform: scale(0.92); background: var(--accent-gold); color: #000; }
 
+        /* سجل العمليات */
         #history-section { margin-top: 50px; width: 100%; display: none; }
+        #history-section h3 { font-size: 1.8rem; border-right: 6px solid var(--accent-gold); padding-right: 15px; }
 
         .transaction-item {
             background: rgba(255,255,255,0.03); margin-bottom: 20px;
@@ -133,7 +132,7 @@
     </div>
 
     <div id="history-section">
-        <h3 style="border-right: 6px solid var(--accent-gold); padding-right: 15px;">سجل العمليات المالي</h3>
+        <h3>سجل العمليات المالي</h3>
         <div id="transactions-list"></div>
     </div>
 </div>
@@ -142,6 +141,7 @@
 <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
 
 <script>
+    // إعدادات قاعدة بيانات أشرف
     const firebaseConfig = { databaseURL: "https://ashraflx71-9efae-default-rtdb.firebaseio.com/" };
     firebase.initializeApp(firebaseConfig);
     const database = firebase.database();
@@ -174,7 +174,6 @@
                     const fee = parseFloat(tx.fees) || 0;
                     const isTransfer = tx.type === 'تحويل رصيد';
                     
-                    // إذا كان تحويل يطرح من الإجمالي، إذا كان إيداع يجمع
                     total += isTransfer ? -(amt + fee) : (amt + fee);
 
                     const div = document.createElement('div');
@@ -197,16 +196,11 @@
         const n = parseFloat(val);
         if (val && !isNaN(n) && n > 0) {
             let f = (type === 'تحويل رصيد') ? 0 : (type.includes("كاش") ? Math.max(3, n * 0.01) : (n <= 100 ? 3 : n * 0.01 + 2));
-            
-            const msg = type === 'تحويل رصيد' ? 
-                `تأكيد خصم مبلغ ${n} من رصيدك؟` : 
-                `تأكيد إيداع مبلغ ${n} برسوم ${f}؟`;
+            const msg = type === 'تحويل رصيد' ? `تأكيد خصم مبلغ ${n}؟` : `تأكيد إيداع مبلغ ${n} برسوم ${f}؟`;
 
             if (confirm(msg)) {
                 database.ref('transactions').push({ 
-                    type, 
-                    amount: n, 
-                    fees: f, 
+                    type, amount: n, fees: f, 
                     time: new Date().toLocaleTimeString('ar-EG') 
                 });
             }
