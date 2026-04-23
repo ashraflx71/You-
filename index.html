@@ -10,6 +10,7 @@
             --bg-black: #050505;
             --primary-purple: #4b0082; /* موف ملكي غامق */
             --secondary-purple: #2e004f; /* موف أعمق للتدريج */
+            --accent-purple: #bc8cf2;
             --text-white: #ffffff;
             --card-gray: #121212;
             --success-green: #00ff88;
@@ -32,13 +33,13 @@
         .logo {
             font-size: 2.8rem;
             font-weight: 800;
-            color: var(--text-white); /* شعار أبيض ناصع */
+            color: var(--text-white);
             text-shadow: 0 0 15px var(--primary-purple);
             margin: 40px 0;
             letter-spacing: 3px;
         }
 
-        /* كارت المحفظة بالموف الغامق */
+        /* كارت المحفظة */
         .wallet-card {
             background: linear-gradient(135deg, var(--primary-purple), var(--secondary-purple));
             width: 100%;
@@ -48,22 +49,22 @@
             box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6);
             margin-bottom: 30px;
             border: 1px solid rgba(255, 255, 255, 0.1);
+            position: relative;
+            overflow: hidden;
         }
 
         .balance-label {
             font-size: 0.95rem;
             opacity: 0.85;
-            font-weight: 400;
-            color: var(--text-white);
         }
 
         .balance-amount {
             font-size: 2.4rem;
             font-weight: 700;
             margin-top: 10px;
-            color: var(--text-white);
         }
 
+        /* شبكة الأزرار */
         .actions-grid {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
@@ -80,15 +81,47 @@
             border-radius: 20px;
             text-align: center;
             font-weight: 700;
-            font-family: 'Cairo', sans-serif;
             font-size: 1rem;
             cursor: pointer;
             transition: all 0.2s ease;
+            font-family: 'Cairo', sans-serif;
         }
 
         .btn-action:active {
             transform: scale(0.95);
             background-color: var(--primary-purple);
+        }
+
+        /* سجل العمليات */
+        #history-section {
+            width: 100%;
+            max-width: 380px;
+            margin-top: 30px;
+            display: none; /* يظهر عند أول عملية */
+        }
+
+        .history-title {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .transaction-item {
+            background: var(--card-gray);
+            padding: 15px;
+            border-radius: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-right: 4px solid var(--primary-purple);
+            margin-bottom: 10px;
+            animation: slideIn 0.4s ease forwards;
+        }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
         .status {
@@ -118,11 +151,12 @@
     </style>
 </head>
 <body>
+
     <div class="logo">YOU</div>
 
     <section class="wallet-card">
         <div class="balance-label">الرصيد المتاح</div>
-        <div class="balance-amount">0.00 EGP</div>
+        <div class="balance-amount" id="balanceDisplay">0.00 EGP</div>
     </section>
 
     <nav class="actions-grid">
@@ -132,6 +166,14 @@
         <button class="btn-action">تحويل أموال</button>
     </nav>
 
+    <section id="history-section">
+        <div class="history-title">
+            <h3 style="font-size: 1.1rem; margin: 0;">آخر العمليات</h3>
+            <span style="font-size: 0.8rem; opacity: 0.6;">عرض الكل</span>
+        </div>
+        <div id="transactions-list"></div>
+    </section>
+
     <footer class="status">
         <span class="status-dot"></span>
         النظام يعمل بكفاءة طاقة قصوى
@@ -139,7 +181,28 @@
 
     <script>
         const buttons = document.querySelectorAll('.btn-action');
-        const balanceElement = document.querySelector('.balance-amount');
+        const balanceDisplay = document.getElementById('balanceDisplay');
+        const historySection = document.getElementById('history-section');
+        const transactionsList = document.getElementById('transactions-list');
+
+        function addTransaction(type, amount) {
+            historySection.style.display = 'block';
+            const now = new Date();
+            const time = now.getHours() + ":" + now.getMinutes().toString().padStart(2, '0');
+            
+            const item = document.createElement('div');
+            item.className = 'transaction-item';
+            
+            item.innerHTML = `
+                <div>
+                    <div style="font-weight: bold; font-size: 0.9rem;">${type}</div>
+                    <div style="font-size: 0.75rem; opacity: 0.6;">اليوم | ${time}</div>
+                </div>
+                <div style="color: var(--success-green); font-weight: bold;">+${amount} EGP</div>
+            `;
+            
+            transactionsList.prepend(item);
+        }
 
         function handleAction(actionName) {
             if (navigator.vibrate) navigator.vibrate(50);
@@ -147,12 +210,16 @@
             const amount = prompt(`إدخال مبلغ لعملية: ${actionName}`, "100");
 
             if (amount && !isNaN(amount)) {
-                balanceElement.innerText = "جاري المعالجة...";
+                const originalBalance = balanceDisplay.innerText;
+                balanceDisplay.innerText = "جاري المعالجة...";
+                
                 setTimeout(() => {
                     alert(`تمت عملية ${actionName} بنجاح!`);
-                    balanceElement.innerText = parseFloat(amount).toLocaleString('en-US', {minimumFractionDigits: 2}) + " EGP";
-                    balanceElement.style.color = "var(--success-green)";
-                }, 1200);
+                    const formattedAmount = parseFloat(amount).toLocaleString('en-US', {minimumFractionDigits: 2});
+                    balanceDisplay.innerText = formattedAmount + " EGP";
+                    balanceDisplay.style.color = "var(--success-green)";
+                    addTransaction(actionName, formattedAmount);
+                }, 1000);
             }
         }
 
