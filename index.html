@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>You | دفع ذكي</title>
+    <!-- Google Fonts for better Arabic typography -->
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-black: #050505;
+            --primary-purple: #8a2be2;
+            --accent-purple: #bc8cf2;
+            --text-white: #ffffff;
+            --card-gray: #121212;
+            --transition: all 0.3s ease;
+        }
+
+        body {
+            background-color: var(--bg-black);
+            color: var(--text-white);
+            font-family: 'Cairo', sans-serif;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .logo {
+            font-size: 2.5rem;
+            font-weight: 800;
+            color: var(--primary-purple);
+            text-shadow: 0 0 20px rgba(138, 43, 226, 0.3);
+            margin: 40px 0;
+            letter-spacing: 2px;
+        }
+
+        /* Enhanced Wallet Card with Glassmorphism */
+        .wallet-card {
+            background: linear-gradient(135deg, var(--primary-purple), #4b0082);
+            width: 100%;
+            max-width: 380px;
+            border-radius: 24px;
+            padding: 30px;
+            box-shadow: 0 15px 35px rgba(138, 43, 226, 0.2);
+            margin-bottom: 30px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .wallet-card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+        }
+
+        .balance-label { 
+            font-size: 0.9rem; 
+            opacity: 0.9; 
+            font-weight: 400;
+        }
+
+        .balance-amount { 
+            font-size: 2.2rem; 
+            font-weight: 700; 
+            margin-top: 8px;
+            letter-spacing: 1px;
+        }
+
+        /* Improved Button Grid */
+        .actions-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 16px;
+            width: 100%;
+            max-width: 380px;
+        }
+
+        .btn-action {
+            background-color: var(--card-gray);
+            border: 1px solid rgba(138, 43, 226, 0.3);
+            color: white;
+            padding: 25px 15px;
+            border-radius: 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: var(--transition);
+            font-weight: 600;
+            font-size: 1rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+            outline: none;
+        }
+
+        .btn-action:hover {
+            border-color: var(--primary-purple);
+            background-color: rgba(138, 43, 226, 0.05);
+            transform: translateY(-2px);
+        }
+
+        .btn-action:active {
+            background-color: var(--primary-purple);
+            transform: scale(0.96);
+        }
+
+        .status {
+            margin-top: auto;
+            font-size: 0.85rem;
+            color: #00ff88;
+            padding: 30px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            opacity: 0.8;
+        }
+
+        .status::before {
+            content: '';
+            width: 8px;
+            height: 8px;
+            background-color: #00ff88;
+            border-radius: 50%;
+            box-shadow: 0 0 10px #00ff88;
+        }
+    </style>
+</head>
+<body>
+    <div class="logo">YOU</div>
+
+    <section class="wallet-card">
+        <div class="balance-label">الرصيد المتاح</div>
+        <div class="balance-amount">0.00 EGP</div>
+    </section>
+
+    <nav class="actions-grid">
+        <button class="btn-action">فودافون كاش</button>
+        <button class="btn-action">فوري</button>
+        <button class="btn-action">شحن رصيد</button>
+        <button class="btn-action">تحويل أموال</button>
+    </nav>
+
+    <footer class="status">النظام يعمل بكفاءة طاقة قصوى</footer>
+</body>
+</html>
