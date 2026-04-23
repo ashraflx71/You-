@@ -148,5 +148,44 @@
     </nav>
 
     <footer class="status">النظام يعمل بكفاءة طاقة قصوى</footer>
-</body>
+</<script>
+    // اختيار العناصر
+    const buttons = document.querySelectorAll('.btn-action');
+    const balanceElement = document.querySelector('.balance-amount');
+
+    // دالة محاكاة عملية دفع
+    function handleAction(actionName) {
+        // إضافة اهتزاز بسيط للموبايل عند الضغط
+        if (navigator.vibrate) {
+            navigator.vibrate(50); 
+        }
+
+        // إظهار نافذة إدخال بيانات بسيطة (Prompt)
+        const amount = prompt(`إدخال مبلغ لعملية: ${actionName}`, "100");
+
+        if (amount && !isNaN(amount)) {
+            // محاكاة تحميل بسيطة
+            const originalText = balanceElement.innerText;
+            balanceElement.innerText = "جاري المعالجة...";
+            
+            setTimeout(() => {
+                alert(`تمت عملية ${actionName} بمبلغ ${amount} جنيه بنجاح!`);
+                // تحديث الرصيد (كمثال فقط)
+                balanceElement.innerText = amount + " EGP";
+                balanceElement.style.color = "var(--success-green)";
+            }, 1500);
+        }
+    }
+
+    // ربط الأزرار بالدالة
+    buttons.forEach(button => {
+        button.addEventListener('click', () => {
+            handleAction(button.innerText);
+        });
+    });
+
+    // رسالة ترحيب في الكونسول (لمتابعة الأداء)
+    console.log("YOU App: System Optimized & Ready.");
+</script>
+body>
 </html>
