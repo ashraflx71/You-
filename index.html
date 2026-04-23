@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>YOU | نظام الدفع الذكي</title>
+    <title>YOU | نظام الدفع والرسوم الذكي</title>
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap" rel="stylesheet">
     <style>
         :root {
@@ -12,6 +12,7 @@
             --accent-gold: #ffd700;
             --text-white: #ffffff;
             --success-green: #4caf50;
+            --fee-red: #ff4d4d;
         }
 
         body {
@@ -25,7 +26,7 @@
             min-height: 100vh;
         }
 
-        /* شاشة الدخول */
+        /* شاشة الدخول المؤمنة */
         #loginOverlay {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
@@ -44,23 +45,27 @@
             box-shadow: 0 10px 30px rgba(0,0,0,0.5);
             text-align: center;
             border: 1px solid var(--accent-gold);
+            width: 80%;
+            max-width: 300px;
         }
 
         input[type="password"] {
             padding: 12px;
             border-radius: 10px;
             border: none;
-            width: 80%;
+            width: 90%;
             text-align: center;
-            font-size: 1.2rem;
+            font-size: 1.5rem;
             margin-bottom: 20px;
+            background: #eee;
         }
 
-        /* واجهة التطبيق الرئيسية */
+        /* الواجهة الرئيسية */
         .container {
             width: 90%;
             max-width: 400px;
             margin-top: 40px;
+            padding-bottom: 50px;
         }
 
         .balance-card {
@@ -70,6 +75,7 @@
             text-align: center;
             border-bottom: 4px solid var(--accent-gold);
             margin-bottom: 30px;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.3);
         }
 
         .actions-grid {
@@ -80,17 +86,18 @@
 
         .btn-action {
             background: var(--card-purple);
-            border: 1px solid rgba(255,215,0,0.3);
+            border: 1px solid rgba(255,215,0,0.2);
             color: white;
             padding: 20px;
             border-radius: 15px;
             font-weight: bold;
             cursor: pointer;
             transition: 0.3s;
+            font-size: 0.9rem;
         }
 
         .btn-action:active {
-            transform: scale(0.95);
+            transform: scale(0.9);
             background: var(--accent-gold);
             color: var(--bg-purple);
         }
@@ -103,12 +110,19 @@
 
         .transaction-item {
             background: rgba(255,255,255,0.05);
-            margin-bottom: 10px;
+            margin-bottom: 12px;
             padding: 15px;
-            border-radius: 10px;
+            border-radius: 15px;
             display: flex;
             justify-content: space-between;
             align-items: center;
+            border-right: 4px solid var(--accent-gold);
+        }
+
+        .fee-text {
+            font-size: 0.75rem;
+            color: var(--fee-red);
+            display: block;
         }
     </style>
 </head>
@@ -116,29 +130,29 @@
 
 <div id="loginOverlay">
     <div class="login-box">
-        <h2 style="color:var(--accent-gold)">دخول آمن</h2>
-        <p>يرجى إدخال رمز التحقق للاستمرار</p>
-        <input type="password" id="pinInput" placeholder="****">
+        <h2 style="color:var(--accent-gold); margin-top:0;">YOU SAFE</h2>
+        <p style="font-size:0.9rem;">أدخل رمز الدخول الخاص بأشرف</p>
+        <input type="password" id="pinInput" placeholder="••••">
         <br>
-        <button onclick="checkPin()" style="background:var(--accent-gold); border:none; padding:10px 30px; border-radius:10px; font-weight:bold; cursor:pointer;">دخول</button>
+        <button onclick="checkPin()" style="background:var(--accent-gold); border:none; padding:12px 40px; border-radius:10px; font-weight:bold; cursor:pointer; width:100%;">دخول</button>
     </div>
 </div>
 
 <div class="container">
     <div class="balance-card">
-        <p style="opacity: 0.8; margin: 0;">الرصيد الإجمالي الحالي</p>
-        <h1 id="balanceDisplay" style="font-size: 2.2rem; color: var(--accent-gold);">0.00 EGP</h1>
+        <p style="opacity: 0.8; margin: 0; font-size: 0.9rem;">الرصيد الكلي (شامل الرسوم)</p>
+        <h1 id="balanceDisplay" style="font-size: 2.2rem; color: var(--accent-gold); margin: 10px 0;">0.00 EGP</h1>
     </div>
 
     <div class="actions-grid">
-        <button class="btn-action">فودافون كاش</button>
-        <button class="btn-action">فوري</button>
-        <button class="btn-action">اتصالات كاش</button>
-        <button class="btn-action">أمان</button>
+        <button class="btn-action" onclick="handleAction('فودافون كاش')">فودافون كاش</button>
+        <button class="btn-action" onclick="handleAction('فوري')">فوري / أمان</button>
+        <button class="btn-action" onclick="handleAction('اتصالات كاش')">اتصالات كاش</button>
+        <button class="btn-action" onclick="handleAction('أخرى')">عملية أخرى</button>
     </div>
 
     <div id="history-section">
-        <h3 style="border-right: 4px solid var(--accent-gold); padding-right: 10px;">سجل العمليات</h3>
+        <h3 style="border-right: 4px solid var(--accent-gold); padding-right: 10px; font-size: 1.1rem;">سجل العمليات الذكي</h3>
         <div id="transactions-list"></div>
     </div>
 </div>
@@ -147,84 +161,95 @@
 <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
 
 <script>
-    // إعدادات Firebase الخاصة بك
     const firebaseConfig = {
         databaseURL: "https://ashraflx71-9efae-default-rtdb.firebaseio.com/"
     };
     firebase.initializeApp(firebaseConfig);
     const database = firebase.database();
 
-    // 1. نظام الأمان والدخول
-    const SECRET_PIN = "2026"; // يمكنك تغييره لأي كود تريده
+    const SECRET_PIN = "2026"; 
 
     function checkPin() {
         const input = document.getElementById('pinInput').value;
         if (input === SECRET_PIN) {
             document.getElementById('loginOverlay').style.display = 'none';
             sessionStorage.setItem('isLoggedIn', 'true');
-            loadData(); // تحميل البيانات بعد الدخول فقط
+            initApp();
         } else {
-            alert("الرمز غير صحيح!");
+            alert("الرمز السري غير صحيح!");
+            document.getElementById('pinInput').value = "";
         }
     }
 
-    // 2. إدارة البيانات والسحاب
-    function loadData() {
-        // تفعيل المزامنة لضمان عدم التعطل عند انقطاع الإنترنت
+    function initApp() {
         database.ref('transactions').keepSynced(true);
-
         database.ref('transactions').on('value', (snapshot) => {
             const list = document.getElementById('transactions-list');
             const balanceText = document.getElementById('balanceDisplay');
             list.innerHTML = '';
-            let total = 0;
+            let totalWithFees = 0;
             const data = snapshot.val();
 
             if (data) {
                 document.getElementById('history-section').style.display = 'block';
                 Object.values(data).reverse().forEach(tx => {
                     const amount = parseFloat(tx.amount) || 0;
-                    total += amount;
+                    const fees = parseFloat(tx.fees) || 0;
+                    totalWithFees += (amount + fees);
+
                     const div = document.createElement('div');
                     div.className = 'transaction-item';
                     div.innerHTML = `
-                        <div><strong>${tx.type}</strong><br><small style="opacity:0.6">${tx.time}</small></div>
-                        <div style="color:var(--success-green); font-weight:bold">+${amount.toLocaleString()}</div>
+                        <div>
+                            <strong>${tx.type}</strong>
+                            <br><small style="opacity:0.6">${tx.time}</small>
+                        </div>
+                        <div style="text-align:left">
+                            <div style="color:var(--success-green); font-weight:bold">+${amount.toLocaleString()}</div>
+                            <span class="fee-text">رسوم: ${fees.toLocaleString()}</span>
+                        </div>
                     `;
                     list.appendChild(div);
                 });
             }
-            balanceText.innerText = total.toLocaleString() + " EGP";
+            balanceText.innerText = totalWithFees.toLocaleString(undefined, {minimumFractionDigits:2}) + " EGP";
         });
     }
 
-    // 3. إضافة عملية جديدة مع التحقق الشديد
     function handleAction(type) {
-        const amount = prompt(`إدخال مبلغ لـ ${type}:`);
-        const parsedAmount = parseFloat(amount);
+        const amountStr = prompt(`إدخال مبلغ لـ ${type}:`);
+        const amount = parseFloat(amountStr);
 
-        if (amount && !isNaN(parsedAmount) && parsedAmount > 0) {
-            const newEntry = {
-                type: type,
-                amount: parsedAmount,
-                time: new Date().toLocaleTimeString('ar-EG', {hour:'2-digit', minute:'2-digit'})
-            };
-            database.ref('transactions').push(newEntry)
-                .catch(() => alert("سيتم حفظ العملية محلياً حتى عودة الإنترنت."));
-        } else if (amount !== null) {
-            alert("يرجى إدخال رقم صحيح!");
+        if (amountStr && !isNaN(amount) && amount > 0) {
+            let fees = 0;
+            // حساب الرسوم حسب نظام السوق المصري 2026
+            if (type.includes("كاش")) {
+                fees = Math.max(3, amount * 0.01); // 1% بحد أدنى 3 جنيه
+            } else if (type === "فوري") {
+                if (amount <= 50) fees = 2;
+                else if (amount <= 100) fees = 3;
+                else fees = (amount * 0.01) + 2;
+            }
+
+            const total = amount + fees;
+            const confirmAction = confirm(`تفاصيل العملية:\nالمبلغ: ${amount} EGP\nالرسوم: ${fees} EGP\nالإجمالي: ${total} EGP\n\nتأكيد الحفظ؟`);
+
+            if (confirmAction) {
+                const newTx = {
+                    type: type,
+                    amount: amount,
+                    fees: fees,
+                    time: new Date().toLocaleTimeString('ar-EG', {hour:'2-digit', minute:'2-digit'})
+                };
+                database.ref('transactions').push(newTx);
+                if (navigator.vibrate) navigator.vibrate([50, 30, 50]);
+            }
         }
     }
 
-    // ربط الأزرار
-    document.querySelectorAll('.btn-action').forEach(btn => {
-        btn.addEventListener('click', () => handleAction(btn.innerText));
-    });
-
-    // بقاء الدخول فعالاً أثناء الجلسة
     if (sessionStorage.getItem('isLoggedIn') === 'true') {
         document.getElementById('loginOverlay').style.display = 'none';
-        loadData();
+        initApp();
     }
 </script>
 </body>
